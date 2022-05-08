@@ -1,0 +1,39 @@
+skynet_root = "skynet/"
+
+preload = "service/preload.lua" -- run preload.lua before every lau service run
+thread = 8
+
+logger = nil
+logpath = "./"
+
+harbor = 0
+
+start = "main" -- main script
+bootstrap = "snlua bootstrap" -- The service for bootstrap
+lualoader = skynet_root .. "lualib/loader.lua"
+
+luaservice = "service/?.lua;" .. "service/?/init.lua;" .. skynet_root .. "service/?.lua"
+cpath = skynet_root .. "cservice/?.so"
+
+lua_path = "lualib/?.lua;"
+	    .. skynet_root .. "lualib/?.lua"
+
+lua_cpath = "luaclib/?.so;"
+	    .. skynet_root .. "luaclib/?.so"
+
+-- daemon = "./skynet.pid"
+
+-- redis conf
+redis_host = "127.0.0.1"
+redis_port = 6379
+
+-- loginserver conf
+loginserver_host = "127.0.0.1"
+loginserver_port = 8001
+auth_timeout = 10*60 -- seconds
+session_expire_time = 30 * 60 -- seconds
+
+-- gameserver conf
+gameserver_port = 8888
+maxclient = 64
+servername = "gameserver"

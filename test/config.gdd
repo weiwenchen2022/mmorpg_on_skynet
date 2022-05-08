@@ -1,0 +1,24 @@
+skynet_root = "skynet/"
+
+preload = "service/preload.lua" -- run preload.lua before every lau service run
+thread = 8
+
+logger = nil
+logpath = "./"
+
+harbor = 0
+
+start = "test_gdd" -- main script
+bootstrap = "snlua bootstrap" -- The service for bootstrap
+lualoader = skynet_root .. "lualib/loader.lua"
+
+luaservice = "test/?.lua;" .. "service/?.lua;" .. skynet_root .. "service/?.lua"
+cpath = skynet_root .. "cservice/?.so"
+
+lua_path = "lualib/?.lua;"
+	    .. skynet_root .. "lualib/?.lua"
+
+lua_cpath = "luaclib/?.so;"
+	    .. skynet_root .. "luaclib/?.so"
+
+-- daemon = "./skynet.pid"
