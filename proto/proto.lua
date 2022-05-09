@@ -120,7 +120,7 @@ character_create 6 {
     }
 
     response {
-	ok 0 : boolean
+	err 0 : string
 	character 1 : character_overview
     }
 }

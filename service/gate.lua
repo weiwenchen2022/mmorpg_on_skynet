@@ -32,6 +32,8 @@ function CMD.disconnect(source, account)
 
     local agent = users[account]
     users[account] = nil
+
+    skynet.call(agent[1], "lua", "close")
     table.insert(agent_pool, agent)
     skynet.wakeup(agent)
     skynet.error(string.format("agent %d recycled", source))

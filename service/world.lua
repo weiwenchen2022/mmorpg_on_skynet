@@ -15,7 +15,9 @@ end
 
 function CMD.character_enter(agent, character)
     if online_character[character] then
-	skynet.error(string.format("multiple login detected, character %d", character))
+	skynet.error(string.format("multiple login detected, character %d, agent %d",
+	    character, online_character[character]))
+
 	CMD.kick(character)
     end
 
@@ -23,13 +25,13 @@ function CMD.character_enter(agent, character)
     skynet.error(string.format("character (%d) enter world", character))
 
     local map, pos = skynet.call(agent, "lua", "world_enter")
-
     local m = assert(map_instance[map])
     skynet.call(m, "lua", "character_enter", agent, character, pos)
 end
 
 function CMD.character_leave(agent, character)
     skynet.error(string.format("character (%d) leave world", character))
+
     online_character[character] = nil
 end
 

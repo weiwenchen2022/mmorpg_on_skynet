@@ -11,15 +11,14 @@ local database
 local world
 
 local function load_list(account)
-    local list = skynet.call(database, "lua", "character", "load_list", account)
-    return list
+    return skynet.call(database, "lua", "character", "load_list", account)
 end
 
 local function check_character(account, id)
     skynet.error("check_character", account, id)
 
     local list = load_list(account)
-    for _, v in pairs(list) do
+    for _, v in ipairs(list) do
 	if id == v then return true end
     end
 
@@ -28,11 +27,10 @@ end
 
 function REQUEST:character_list()
     local list = load_list(self.account)
+    skynet.error("character_list", self.account, list)
+
     local character = {}
-
-    skynet.error("character_list", #list, self.account)
-
-    for _, id in pairs(list) do
+    for _, id in ipairs(list) do
 	local c = skynet.call(database, "lua", "character", "load", id)
 	if c then
 	    character[id] = c
@@ -43,7 +41,7 @@ function REQUEST:character_list()
 end
 
 local function create_character(name, race, class)
-    assert(type(name) == "string" and 2 < #name and #name < 24)
+    assert(type(name) == "string" and 2 <= #name and #name <= 24)
     assert(race)
     assert(gdd["class"][class])
 
@@ -75,19 +73,14 @@ function REQUEST:character_create(arg)
     local c = assert(arg.character)
     local character = create_character(c.name, c.race, c.class)
 
-    local id = skynet.call(database, "lua", "character", "reserve", uuid.gen(), c.name)
-    if not id then return {ok = false,} end
-
-    skynet.error("character_create", id)
+    local id, err = skynet.call(database, "lua", "character", "reserve", uuid.gen(), c.name)
+    if not id then return {err = err,} end
 
     character.id = id
     skynet.call(database, "lua", "character", "save", id, character)
+    skynet.call(database, "lua", "character", "add_list", self.account, id)
 
-    local list = load_list(self.account)
-    table.insert(list, id)
-    skynet.call(database, "lua", "character", "save_list", self.account, list)
-
-    return {ok = true, character = character,}
+    return {character = character,}
 end
 
 function REQUEST:character_pick(arg)
@@ -102,7 +95,10 @@ function REQUEST:character_pick(arg)
 end
 
 function init(character)
-    local temp_attribute = {{}, {},}
+    local temp_attribute = {
+	[1]= {},
+	[2] = {},
+    }
     local attribute_count = #temp_attribute
 
     character.runtime = {
@@ -111,8 +107,6 @@ function init(character)
     }
 
     local class, race, level = character.general.class, character.general.race, character.attribute.level
-    skynet.error("math.type(level)", math.type(level))
-
     local attribute = gdd.attribute
     local base = temp_attribute[1]
     base.health_max = attribute.health_max[class][level]
@@ -141,6 +135,8 @@ function init(character)
 end
 
 function save(character)
+    if not character then return end
+
     local runtime = character.runtime
     character.runtime = nil
 

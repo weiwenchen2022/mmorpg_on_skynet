@@ -14,6 +14,16 @@ local host
 local send_request
 
 -- agent state
+--[[
+local self = {
+    client_fd = integer,
+    account = integer,
+
+    character = table,
+    world = integer,
+    map = integer,
+}
+]]
 local self = {
     client_fd = nil,
 
@@ -21,8 +31,6 @@ local self = {
     world = nil,
     map = nil,
 }
-
-
 
 local function send_package(pack)
     local package = string.pack(">s2", pack)
@@ -52,6 +60,7 @@ local function heartbeat_check()
     local ti = last_heartbeat_time + HEARTBEAT_TIME_MAX - skynet.now()
     if ti <= 0 then
 	skynet.error "heartbeat_check timeout"
+
 	kick_self()
 	return
     end
@@ -110,29 +119,23 @@ skynet.register_protocol {
     end,
 }
 
-local _CMD = {}
-local CMD = _CMD
+local CMD = {}
 
-function _CMD.start(source, conf)
-    local fd = conf.client
-    local gate = conf.gate
-
+function CMD.start(source, conf)
     -- slot 1, 2 set at main.lua
     host = sprotoloader.load(1):host "package"
     send_request = host:attach(sprotoloader.load(2))
 
-    self.client_fd = fd
-    self.gate = gate
-    self.account = conf.account
+    self = {
+	client_fd = conf.client,
+	gate = conf.gate,
+	account = conf.account,
 
-    self.REQUEST = {}
-    self.RESPONSE = {}
-    self.CMD = {}
-    for k, v in pairs(_CMD) do
-	self.CMD[k] = v
-    end
-
-    self.send_request = _send_request
+	REQUEST = {},
+	RESPONSE = {},
+	CMD = CMD,
+	send_request = _send_request,
+    }
 
     character_handler:register(self)
 
@@ -144,21 +147,18 @@ function _CMD.start(source, conf)
     heartbeat_check()
 end
 
-function _CMD.close()
+function CMD.close()
     skynet.error "agent closed"
 
-    local account
     if self then
-	account = self.account
-
 	if self.map then
 	    skynet.call(self.map, "lua", "character_leave")
 	    self.map = nil
 
-	    map_handler:unregister(self)
-	    aoi_handler:unregister(self)
-	    move_handler:unregister(self)
 	    combat_handler:unregister(self)
+	    move_handler:unregister(self)
+	    aoi_handler:unregister(self)
+	    map_handler:unregister(self)
 	end
 
 	if self.world then
@@ -166,24 +166,22 @@ function _CMD.close()
 	    self.world = nil
 	end
 
-	character_handler.save(user.character)
-
+	character_handler.save(self.character)
 	self = nil
     end
-
-    skynet.call(gamed, "lua", "close", skynet.self(), account)
 end
 
-function _CMD.disconnect()
+function CMD.disconnect()
     skynet.call(self.gate, "lua", "disconnect", self.account)
 end
 
-function _CMD.kick()
-    skynet.error("agent kick")
+function CMD.kick()
+    skynet.error "agent kicked"
+
     skynet.call(self.gate, "lua", "kick", self.client_fd)
 end
 
-function _CMD.world_enter(source)
+function CMD.world_enter(source)
     character_handler.init(self.character)
 
     self.world = source
@@ -192,7 +190,7 @@ function _CMD.world_enter(source)
     return self.character.general.map, self.character.movement.pos
 end
 
-function _CMD.map_enter(source)
+function CMD.map_enter(source)
     self.map = source
 
     map_handler:register(self)

@@ -21,22 +21,7 @@ function CMD.character_enter(_, agent, character)
     skynet.error(string.format("character (%d) loading map", character))
 
     pending_character[agent] = character
-    skynet.call(agent, "lua", "map_enter", skynet.self())
-end
-
-function CMD.character_leave(agent)
-    local character = pending_character[agent] or online_character[agent]
-    if character then
-	skynet.error(string.format("character (%d) leave map", character))
-
-	local ok, list = aoi.remove(agent)
-	if ok then
-	    skynet.call(agent, "lua", "aoi_manage", nil, list)
-	end
-    end
-
-    pending_character[agent] = nil
-    online_character[agent] = nil
+    skynet.call(agent, "lua", "map_enter")
 end
 
 function CMD.character_ready(agent, pos)
@@ -53,6 +38,21 @@ function CMD.character_ready(agent, pos)
 
     skynet.call(agent, "lua", "aoi_manage", list)
     return true
+end
+
+function CMD.character_leave(agent)
+    local character = pending_character[agent] or online_character[agent]
+    if character then
+	skynet.error(string.format("character (%d) leave map", character))
+
+	local ok, list = aoi.remove(agent)
+	if ok then
+	    skynet.call(agent, "lua", "aoi_manage", nil, list)
+	end
+    end
+
+    pending_character[agent] = nil
+    online_character[agent] = nil
 end
 
 function CMD.move_blink(agent, pos)

@@ -88,6 +88,11 @@ function RESPONSE:character_list(arg)
     user.character_list = arg.character
 end
 
+function RESPONSE:character_pick(arg)
+    assert(arg.ok and arg.character)
+    user.character = arg.character
+end
+
 local function handle_response(session, arg)
     local t = assert(pending_session[session])
     pending_session[session] = nil
@@ -206,6 +211,10 @@ local function handle_cmd(line)
 	    local _, v = next(user.character_list)
 	    return tostring(v[name])
 	end)
+    elseif cmd == "map_ready" then
+	if not user.character then
+	    return false
+	end
     end
 
     print(cmd, "===", p)
