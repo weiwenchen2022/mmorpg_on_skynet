@@ -82,8 +82,8 @@ function update(id, pos)
     local ulist = {}
     for cid in pairs(nlist) do
 	if olist[cid] then
-	    ulist[cid] = true
 	    olist[cid] = nil
+	    ulist[cid] = true
 	end
     end
 

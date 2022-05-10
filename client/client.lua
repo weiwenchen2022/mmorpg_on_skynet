@@ -20,7 +20,7 @@ local request = host:attach(sproto.new(proto.c2s))
 local fd
 local last = ""
 
-local user = {name = "test", password = constant.default_password, login = false,}
+local user = {name = arg[1] or "test", password = constant.default_password, login = false,}
 user.private_key, user.public_key = srp.create_client_key()
 
 local function send_package(fd, pack)
@@ -85,12 +85,20 @@ function RESPONSE:login(arg)
 end
 
 function RESPONSE:character_list(arg)
+    print("character_list")
+    print_r(arg.character)
     user.character_list = arg.character
 end
 
 function RESPONSE:character_pick(arg)
     assert(arg.ok and arg.character)
+    print("character_pick")
+    print_r(arg.character)
     user.character = arg.character
+end
+
+function RESPONSE:map_ready()
+    user.map_ready = true
 end
 
 local function handle_response(session, arg)
@@ -109,6 +117,7 @@ local function handle_response(session, arg)
     end
 end
 
+local r = {wantmore = true,}
 local function handle_request(name, arg, response)
     print("request", name)
 
@@ -116,6 +125,12 @@ local function handle_request(name, arg, response)
 	print_r(arg)
     else
 	print "no argument"
+    end
+
+    if name:sub(1, 4) == "aoi_" and name ~= "aoi_remove" then
+	if response then
+	    send_package(fd, response(r))
+	end
     end
 end
 
@@ -202,7 +217,17 @@ local function handle_cmd(line)
 	return true
     end
 
-    if cmd == "character_pick" then
+    if cmd == "character_create" then
+	p = string.gsub(p, "$name", function()
+	    if user.name == "test" then
+		return "hello"
+	    elseif user.name == "test2" then
+		return "world"
+	    end
+
+	    return nil
+	end)
+    elseif cmd == "character_pick" then
 	if not user.character_list then
 	    return false
 	end
@@ -213,6 +238,10 @@ local function handle_cmd(line)
 	end)
     elseif cmd == "map_ready" then
 	if not user.character then
+	    return false
+	end
+    elseif cmd == "move" then
+	if not user.map_ready then
 	    return false
 	end
     end

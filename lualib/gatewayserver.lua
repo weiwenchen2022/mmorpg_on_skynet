@@ -61,6 +61,8 @@ function gatewayserver.start(conf)
     end
 
     function handler.disconnect(fd)
+	skynet.error("disconnect", fd)
+
 	handshake[fd] = nil
 	local c = connection[fd]
 	if c then
@@ -80,7 +82,12 @@ function gatewayserver.start(conf)
 	    connection[fd] = nil
 	end
     end
-    handler.error = handler.disconnect
+
+    handler.error = function(fd, err)
+	skynet.error(string.format("error, fd = %d, err = '%s'", fd, err))
+
+	handler.disconnect(fd)
+    end
 
     local function do_auth(fd, type, name, arg, addr)
 	assert("REQUEST" == type)

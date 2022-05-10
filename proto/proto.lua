@@ -52,6 +52,24 @@ local types = [[
     attribute 2 : attribute
     movement 3 : movement
 }
+
+.attribute_aoi {
+    level 0 : integer
+    health 1 : integer
+    health_max 2 : integer
+}
+
+.character_aoi {
+    id 0 : integer
+    general 1 : general
+    attribute 2 : attribute_aoi
+    movement 3 : movement
+}
+
+.character_aoi_move {
+    id 0 : integer
+    movement 1 : movement
+}
 ]]
 
 proto.types = sprotoparser.parse(types)
@@ -152,12 +170,23 @@ move 9 {
 ]])
 
 proto.s2c = sprotoparser.parse(types .. [[
-.character_aoi_move {
-    id 0 : integer
-    movement 1 : movement
+aoi_add 1 {
+    request {
+	character 0 : character_aoi
+    }
+
+    response {
+	wantmore 0 : boolean
+    }
 }
 
-aoi_update_move 1 {
+aoi_remove 2 {
+    request {
+	character 0 : integer
+    }
+}
+
+aoi_update_move 3 {
     request {
 	character 0 : character_aoi_move
     }
@@ -166,7 +195,6 @@ aoi_update_move 1 {
 	wantmore 0 : boolean
     }
 }
-
 ]])
 
 return proto

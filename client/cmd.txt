@@ -1,8 +1,8 @@
 # help
 
 character_list
-character_create character = {name = "hello", race = "human", class = "warrior",}
+character_create character = {name = "$name", race = "human", class = "warrior",}
 character_pick id = $id
 
 map_ready
-# move pos = {x = 123, y = 321,}
+# move pos = {x = 101, y = 10,}

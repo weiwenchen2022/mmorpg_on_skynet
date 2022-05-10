@@ -31,10 +31,12 @@ function CMD.character_ready(agent, pos)
     online_character[agent] = character
     pending_character[agent] = nil
 
-    skynet.error(string.format("character (%d) enter map", character))
+    skynet.error(string.format("character (%d) enter map", character), pos)
 
     local ok, list = aoi.insert(agent, pos)
     if not ok then return false end
+
+    skynet.error("character_ready", list)
 
     skynet.call(agent, "lua", "aoi_manage", list)
     return true
@@ -57,6 +59,8 @@ end
 
 function CMD.move_blink(agent, pos)
     local ok, add, update, remove = aoi.update(agent, pos)
+    skynet.error("move_blink", agent, pos, ok)
+
     if not ok then return end
 
     skynet.call(agent, "lua", "aoi_manage", add, remove, update, "move")

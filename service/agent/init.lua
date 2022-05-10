@@ -81,7 +81,7 @@ local RESPONSE
 local function response(id, arg)
     local t = assert(session[id])
     local f = assert(RESPONSE[t.name])
-    f(arg)
+    f(self, arg)
 end
 
 skynet.register_protocol {
@@ -172,6 +172,8 @@ function CMD.close()
 end
 
 function CMD.disconnect()
+    if not self then return end
+
     skynet.call(self.gate, "lua", "disconnect", self.account)
 end
 

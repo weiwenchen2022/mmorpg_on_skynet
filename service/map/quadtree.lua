@@ -1,3 +1,4 @@
+local skynet = require "skynet"
 
 local _M = setmetatable({}, {__index = _ENV,})
 _ENV = _M
@@ -19,15 +20,15 @@ local function subdivide(self, last)
     }
 
     local ret
-    local t
     for k, v in pairs(self.object) do
 	for _, c in ipairs(self.children) do
-	    t = c:insert(k, v.x, v.y)
+	    local t = c:insert(k, v.x, v.y)
 	    if t then
 		if last == k then
 		    ret = t
 		end
 
+		self.object[k] = nil
 		break
 	    end
 	end
@@ -49,10 +50,14 @@ function meta:insert(id, x, y)
 	    if t then return t end
 	end
     else
-	self.object[id] = {x = y, y = y,}
+	self.object[id] = {x = x, y = y,}
 
-	local k = next(self.object)
-	if next(self.object, k) then
+	local sz = 0
+	for k in pairs(self.object) do sz = sz + 1 end
+
+	skynet.error("insert", id, x, y, sz, self.object)
+
+	if sz > 100 then
 	    return subdivide(self, id)
 	end
 
@@ -78,12 +83,16 @@ end
 function meta:query(id, left, top, right, bottom, result)
     if left > self.right or right < self.left or top > self.bottom or bottom < self.top then return end
 
+    skynet.error("query", id, left, top, right, bottom)
+
     if self.children then
 	for _, child in ipairs(self.children) do
 	    child:query(id, left, top, right, bottom, result)
 	end
     elseif self.object then
 	for k, v in pairs(self.object) do
+	    skynet.error("query", k, v.x, v.y)
+
 	    if id ~= k and (left <= v.x and v.x <= right and top <= v.y and v.y <= bottom) then
 		table.insert(result, k)
 	    end

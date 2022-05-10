@@ -1,4 +1,5 @@
 local cmsgpack = require "cmsgpack"
+local skynet = require "skynet"
 
 local _M = setmetatable({}, {__index = _ENV,})
 _ENV = _M
@@ -27,6 +28,8 @@ end
 
 function save(id, data)
     local key = make_character_key(id)
+    skynet.error("save", id, data)
+
     data = cmsgpack.pack(data)
     db:hset(key, "base", data)
 end
