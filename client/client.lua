@@ -129,6 +129,7 @@ local function handle_request(name, arg, response)
 
     if name:sub(1, 4) == "aoi_" and name ~= "aoi_remove" then
 	if response then
+	    r.character = arg.character.id
 	    send_package(fd, response(r))
 	end
     end
@@ -244,6 +245,10 @@ local function handle_cmd(line)
 	if not user.map_ready then
 	    return false
 	end
+
+	p = string.gsub(p, "$([_%w]+)", function(name)
+	    return tostring(user.character.movement.pos[name])
+	end)
     end
 
     print(cmd, "===", p)

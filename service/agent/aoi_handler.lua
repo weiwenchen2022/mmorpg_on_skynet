@@ -15,8 +15,18 @@ local user
 local self_id
 local self_flag
 local scope2proto = {
-    move = "aoi_update_move",
-    attribute = "aoi_update_attribute",
+    move = {
+	[1] = "aoi_update_move",
+	[2] = function(c)
+	    if subscribe_character[c.id] then
+		skynet.error("move", subscribe_character[c.id].agent, c.movement)
+	    end
+
+	    return {character = {id = c.id, movement = c.movement,},}
+	end,
+    },
+
+    attribute = {"aoi_update_attribute", function(c) return {character = {id = c.id,},} end,},
 }
 
 _M:init(function(u)
@@ -40,7 +50,7 @@ local function send_self(scope)
 	flag.dirty = false
 	flag.wantmore = false
 
-	user.send_request(scope2proto[scope], {character = user.character,})
+	user.send_request(scope2proto[scope][1], scope2proto[scope][2](user.character))
     end
 end
 
@@ -93,15 +103,15 @@ local function refresh_aoi(id, scope)
     if not t then return end
 
     local c = t.character
-    t = c.flag[scope]
+    t = t.flag[scope]
     if not t then return end
 
-    skynet.error(string.format("scope = %s, dirty = %q, wantmore = %q", scope, t.dirty, t.wantmore))
+    skynet.error(string.format("scope = '%s', dirty = %q, wantmore = %q", scope, t.dirty, t.wantmore))
 
     if t.dirty and t.wantmore then
 	c:update()
 
-	user.send_request(scope2proto[scope], {character = c,})
+	user.send_request(scope2proto[scope][1], scope2proto[scope][2](c))
 	t.dirty = false
 	t.wantmore = false
     end
@@ -146,6 +156,8 @@ end
 
 local function aoi_remove(list)
     if not list then return end
+
+    skynet.error("aoi_remove", list)
 
     for agent in pairs(list) do
 	skynet.fork(function()
@@ -195,7 +207,9 @@ function CMD.aoi_manage(source, alist, rlist, ulist, scope)
 end
 
 function CMD.aoi_send(source, scope)
-    local t = subscribe_agent[souce]
+    skynet.error("aoi_send", source, scope)
+
+    local t = subscribe_agent[source]
     if not t then return end
 
     local id = t.character.id
@@ -207,9 +221,9 @@ end
 function RESPONSE:aoi_add(response)
     skynet.error("aoi_add", response)
 
-    if not response or not response.wantmore then return end
+    if not response or not response.character or not response.wantmore then return end
 
-    local id = self.character.id
+    local id = response.character
     for k in pairs(scope2proto) do
 	mark_flag(id, k, "wantmore", true)
 	refresh_aoi(id, k)
@@ -217,15 +231,19 @@ function RESPONSE:aoi_add(response)
 end
 
 function RESPONSE:aoi_update_move(response)
-    if not response or not response.wantmore then return end
+    skynet.error("aoi_update_move", response)
 
-    aoi_update_response(self.character.id, "move")
+    if not response or not response.character or not response.wantmore then return end
+
+    aoi_update_response(response.character, "move")
 end
 
 function RESPONSE:aoi_update_attribute(response)
-    if not response or not response.wantmore then return end
+    skynet.error("aoi_update_attribute", response)
 
-    aoi_update_response(self.character.id, "attribute")
+    if not response or not response.character or not response.wantmore then return end
+
+    aoi_update_response(response.character, "attribute")
 end
 
 function find(id)

@@ -71,7 +71,6 @@ local types = [[
     movement 1 : movement
 }
 ]]
-
 proto.types = sprotoparser.parse(types)
 
 proto.c2s = sprotoparser.parse(types .. [[
@@ -176,7 +175,8 @@ aoi_add 1 {
     }
 
     response {
-	wantmore 0 : boolean
+	character 0 : integer
+	wantmore 1 : boolean
     }
 }
 
@@ -192,7 +192,8 @@ aoi_update_move 3 {
     }
 
     response {
-	wantmore 0 : boolean
+	character 0 : integer
+	wantmore 1 : boolean
     }
 }
 ]])

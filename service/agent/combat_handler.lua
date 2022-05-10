@@ -1,5 +1,6 @@
 local skynet = require "skynet"
 local handler = require "handler"
+local aoi_handler = require "aoi_handler"
 
 local REQUEST = {}
 local CMD = {}
