@@ -199,8 +199,6 @@ function CMD.aoi_manage(source, alist, rlist, ulist, scope)
 	character_writer:commit()
     end
 
-    skynet.error("aoi_manage", alist, ulist, rlist, scope)
-
     aoi_add(alist)
     aoi_remove(rlist)
     aoi_update(ulist, scope)

@@ -1,5 +1,6 @@
 local skynet = require "skynet"
 local handler = require "handler"
+local aoi_handler = require "aoi_handler"
 
 local REQUEST = {}
 local _M = handler.new(REQUEST)
@@ -19,6 +20,8 @@ function REQUEST:move(arg)
     local ok = skynet.call(self.map, "lua", "move_blink", npos)
     if ok then
 	self.character.movement.pos = npos
+	aoi_handler.boardcast "move"
+
 	return {pos = npos,}
     end
 end
