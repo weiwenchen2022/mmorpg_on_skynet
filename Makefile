@@ -20,7 +20,15 @@ LUA_CLIB = \
 	   uuid \
 
 all : \
+  $(SKYNET_ROOT)/skynet \
   $(foreach v, $(LUA_CLIB), $(LUA_CLIB_PATH)/$(v).so)
+
+# skynet
+$(SKYNET_ROOT)/skynet : $(SKYNET_ROOT)/Makefile
+	$(MAKE) -C $(SKYNET_ROOT) linux
+
+$(SKYNET_ROOT)/Makefile :
+	git submodule update --init
 
 # cmsgpack
 $(LUA_CLIB_PATH)/cmsgpack.so : 3rd/lua-cmsgpack/build/Makefile | $(LUA_CLIB_PATH)

@@ -4,3 +4,6 @@
 [submodule "3rd/openssl"]
 	path = 3rd/openssl
 	url = https://github.com/openssl/openssl.git
+[submodule "skynet"]
+	path = skynet
+	url = https://github.com/cloudwu/skynet.git
