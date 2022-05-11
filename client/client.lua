@@ -118,6 +118,18 @@ local function handle_response(session, arg)
 end
 
 local r = {wantmore = true,}
+local REQUEST = {}
+
+function REQUEST.aoi_add(arg)
+    assert(arg and arg.character and arg.character.id)
+
+    if not user.aoi_view then
+	user.aoi_view = {}
+    end
+
+    user.aoi_view[arg.character.id] = arg.character
+end
+
 local function handle_request(name, arg, response)
     print("request", name)
 
@@ -125,6 +137,11 @@ local function handle_request(name, arg, response)
 	print_r(arg)
     else
 	print "no argument"
+    end
+
+    local f = REQUEST[name]
+    if f then
+	f(arg)
     end
 
     if name:sub(1, 4) == "aoi_" and name ~= "aoi_remove" then
@@ -248,6 +265,15 @@ local function handle_cmd(line)
 
 	p = string.gsub(p, "$([_%w]+)", function(name)
 	    return tostring(user.character.movement.pos[name])
+	end)
+    elseif cmd == "combat" then
+	if not user.aoi_view or not next(user.aoi_view) then
+	    return false
+	end
+
+	local _, target = next(user.aoi_view)
+	p = string.gsub(p, "$target", function()
+	    return tostring(target.id)
 	end)
     end
 

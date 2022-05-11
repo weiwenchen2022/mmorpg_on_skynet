@@ -26,7 +26,12 @@ local scope2proto = {
 	end,
     },
 
-    attribute = {"aoi_update_attribute", function(c) return {character = {id = c.id,},} end,},
+    attribute = {
+	[1] = "aoi_update_attribute",
+	[2] = function(c)
+	    return {character = {id = c.id, attribute = c.attribute},}
+	end,
+    },
 }
 
 _M:init(function(u)

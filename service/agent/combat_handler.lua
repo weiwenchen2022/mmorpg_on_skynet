@@ -14,18 +14,18 @@ end)
 
 function REQUEST:combat(arg)
     assert(arg and arg.target)
+    skynet.error("combat", arg)
 
-    local tid = arg.target
-    local agent = aoi_handler.find(tid)
-    assert(agent)
-
+    local agent = assert(aoi_handler.find(arg.target))
     local damage = self.character.attribute.attack_power
     damage = skynet.call(agent, "lua", "combat_melee_damage", user.character.id, damage)
 
-    return {target = tid, damage = damage,}
+    return {target = arg.target, damage = damage,}
 end
 
 function CMD.combat_melee_damage(source, attacker, damage)
+    skynet.error("combat_melee_damage", source, attacker, damage)
+
     damage = math.floor(damage * 0.75)
 
     local hp = user.character.attribute.health - damage
