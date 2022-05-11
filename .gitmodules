@@ -1,3 +1,6 @@
 [submodule "3rd/lua-cmsgpack"]
 	path = 3rd/lua-cmsgpack
 	url = https://github.com/antirez/lua-cmsgpack.git
+[submodule "3rd/openssl"]
+	path = 3rd/openssl
+	url = https://github.com/openssl/openssl.git
