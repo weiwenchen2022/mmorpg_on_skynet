@@ -45,8 +45,14 @@ $(LUA_CLIB_PATH)/uuid.so : lualib-src/lua-uuid.c | $(LUA_CLIB_PATH)
 $(LUA_CLIB_PATH) :
 	-mkdir $@
 
-$(OPENSSL_STATICLIB) :
-	cd 3rd/openssl && ./Configure && $(MAKE)
+$(OPENSSL_STATICLIB) : 3rd/openssl/Makefile
+	cd 3rd/openssl && $(MAKE)
+
+3rd/openssl/Makefile : | 3rd/openssl/Configure
+	cd 3rd/openssl && ./Configure
+
+3rd/openssl/Configure :
+	git submodule update --init
 
 clean :
 	rm -f $(LUA_CLIB_PATH)/*.so
