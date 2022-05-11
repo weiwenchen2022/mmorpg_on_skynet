@@ -27,8 +27,11 @@ $(LUA_CLIB_PATH)/cmsgpack.so : 3rd/lua-cmsgpack/Makefile | $(LUA_CLIB_PATH)
 	cd 3rd/lua-cmsgpack/build && $(MAKE)
 	cp -f 3rd/lua-cmsgpack/build/cmsgpack.so $@
 
-3rd/lua-cmsgpack/Makefile :
+3rd/lua-cmsgpack/Makefile : | 3rd/lua-cmsgpack/CMakeLists.txt
 	cd 3rd/lua-cmsgpack; mkdir build; cd build; cmake ..
+
+3rd/lua-cmsgpack/CMakeLists.txt :
+	git submodule update --init
 
 $(LUA_CLIB_PATH)/srp.so : lualib-src/lua-srp.c $(OPENSSL_STATICLIB) | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I$(OPENSSL_INC) -o $@ $^ -pthread
