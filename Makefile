@@ -23,11 +23,11 @@ all : \
   $(foreach v, $(LUA_CLIB), $(LUA_CLIB_PATH)/$(v).so)
 
 # cmsgpack
-$(LUA_CLIB_PATH)/cmsgpack.so : 3rd/lua-cmsgpack/Makefile | $(LUA_CLIB_PATH)
+$(LUA_CLIB_PATH)/cmsgpack.so : 3rd/lua-cmsgpack/build/Makefile | $(LUA_CLIB_PATH)
 	cd 3rd/lua-cmsgpack/build && $(MAKE)
 	cp -f 3rd/lua-cmsgpack/build/cmsgpack.so $@
 
-3rd/lua-cmsgpack/Makefile : | 3rd/lua-cmsgpack/CMakeLists.txt
+3rd/lua-cmsgpack/build/Makefile : | 3rd/lua-cmsgpack/CMakeLists.txt
 	cd 3rd/lua-cmsgpack; mkdir build; cd build; cmake ..
 
 3rd/lua-cmsgpack/CMakeLists.txt :
