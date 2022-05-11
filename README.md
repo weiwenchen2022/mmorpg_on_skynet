@@ -8,6 +8,7 @@
 
 # 编译
 git clone https://github.com/weiwenchen2022/mmorpg_on_skynet.git
+
 cd mmorpg_on_skynet; make
 
 # 安装redis
