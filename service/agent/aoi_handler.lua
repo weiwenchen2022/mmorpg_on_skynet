@@ -18,10 +18,6 @@ local scope2proto = {
     move = {
 	[1] = "aoi_update_move",
 	[2] = function(c)
-	    if subscribe_character[c.id] then
-		skynet.error("move", subscribe_character[c.id].agent, c.movement)
-	    end
-
 	    return {character = {id = c.id, movement = c.movement,},}
 	end,
     },
@@ -210,8 +206,6 @@ function CMD.aoi_manage(source, alist, rlist, ulist, scope)
 end
 
 function CMD.aoi_send(source, scope)
-    skynet.error("aoi_send", source, scope)
-
     local t = subscribe_agent[source]
     if not t then return end
 
@@ -222,8 +216,6 @@ function CMD.aoi_send(source, scope)
 end
 
 function RESPONSE:aoi_add(response)
-    skynet.error("aoi_add", response)
-
     if not response or not response.character or not response.wantmore then return end
 
     local id = response.character
@@ -234,16 +226,12 @@ function RESPONSE:aoi_add(response)
 end
 
 function RESPONSE:aoi_update_move(response)
-    skynet.error("aoi_update_move", response)
-
     if not response or not response.character or not response.wantmore then return end
 
     aoi_update_response(response.character, "move")
 end
 
 function RESPONSE:aoi_update_attribute(response)
-    skynet.error("aoi_update_attribute", response)
-
     if not response or not response.character or not response.wantmore then return end
 
     aoi_update_response(response.character, "attribute")

@@ -15,7 +15,6 @@ OPENSSL_INC := 3rd/openssl/include
 
 LUA_CLIB = \
 	   cmsgpack \
-	   cjson \
 	   srp \
 	   aes \
 	   uuid \
@@ -23,10 +22,7 @@ LUA_CLIB = \
 all : \
   $(foreach v, $(LUA_CLIB), $(LUA_CLIB_PATH)/$(v).so)
 
-$(LUA_CLIB_PATH)/cjson.so : | $(LUA_CLIB_PATH)
-	cd 3rd/lua-cjson && $(MAKE)
-	cp -f 3rd/lua-cjson/cjson.so $@
-
+# cmsgpack
 $(LUA_CLIB_PATH)/cmsgpack.so : 3rd/lua-cmsgpack/Makefile | $(LUA_CLIB_PATH)
 	cd 3rd/lua-cmsgpack/build && $(MAKE)
 	cp -f 3rd/lua-cmsgpack/build/cmsgpack.so $@
