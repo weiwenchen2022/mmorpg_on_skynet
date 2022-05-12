@@ -2,6 +2,7 @@
 
 character_list
 character_create character = {name = "$name", race = "human", class = "warrior",}
+character_list
 character_pick id = $id
 
 map_ready

@@ -20,7 +20,7 @@ local request = host:attach(sproto.new(proto.c2s))
 local fd
 local last = ""
 
-local user = {name = arg[1] or "test", password = constant.default_password, login = false,}
+local user = {name = arg[1] or "test", password = arg[2] or constant.default_password, login = false,}
 user.private_key, user.public_key = srp.create_client_key()
 
 local function send_package(fd, pack)
@@ -48,8 +48,14 @@ function RESPONSE:handshake(arg)
     local name = self.name
     assert(user.name == name)
 
-    local session_key = srp.create_client_session_key(user.name, user.password, arg.salt,
+    local session_key
+    if arg.user_exists then
+	session_key = srp.create_client_session_key(user.name, user.password, arg.salt,
 	    user.private_key, user.public_key, arg.server_pub)
+    else
+	session_key = srp.create_client_session_key(user.name, constant.default_password, arg.salt,
+	    user.private_key, user.public_key, arg.server_pub)
+    end
     user.session_key = session_key
 
     send_request("auth", {
@@ -246,7 +252,7 @@ local function handle_cmd(line)
 	    return nil
 	end)
     elseif cmd == "character_pick" then
-	if not user.character_list then
+	if not user.character_list or not next(user.character_list) then
 	    return false
 	end
 
