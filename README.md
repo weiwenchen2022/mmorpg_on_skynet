@@ -8,6 +8,7 @@
 
 # 编译
 git clone https://github.com/weiwenchen2022/mmorpg_on_skynet.git
+
 cd mmorpg_on_skynet; make
 
 # 安装redis
@@ -17,7 +18,7 @@ cd mmorpg_on_skynet; make
 1. 运行./start.sh脚本，启动服务器。
 
 # 运行客户端
-测试客户端是client/client.lua，通过命令“lua client/client.lua”。
+测试客户端是client/client.lua，通过命令“lua client/client.lua”运行。
 
 client.lua接受用户名作为命令行参数 “lua client/client.lua username”。
 
