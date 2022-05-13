@@ -20,7 +20,7 @@ cd mmorpg_on_skynet; make
 # 运行客户端
 测试客户端是client/client.lua，通过命令“lua client/client.lua”运行。
 
-client.lua接受用户名作为命令行参数 “lua client/client.lua username”。
+client.lua接受用户名、密码作为命令行参数 “lua client/client.lua username password”。
 
 client.lua会自动完成登陆相关的流程，然后等待用户输入。
 
