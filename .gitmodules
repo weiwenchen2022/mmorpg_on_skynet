@@ -7,3 +7,6 @@
 [submodule "skynet"]
 	path = skynet
 	url = https://github.com/cloudwu/skynet.git
+[submodule "3rd/lua-aoi"]
+	path = 3rd/lua-aoi
+	url = https://github.com/weiwenchen2022/lua-aoi.git

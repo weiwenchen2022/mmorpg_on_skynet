@@ -14,6 +14,7 @@ OPENSSL_STATICLIB := 3rd/openssl/libcrypto.a
 OPENSSL_INC := 3rd/openssl/include
 
 LUA_CLIB = \
+	   aoi \
 	   cmsgpack \
 	   srp \
 	   aes \
@@ -28,6 +29,17 @@ $(SKYNET_ROOT)/skynet : $(SKYNET_ROOT)/Makefile
 	$(MAKE) -C $(SKYNET_ROOT) linux
 
 $(SKYNET_ROOT)/Makefile :
+	git submodule update --init
+
+# aoi
+$(LUA_CLIB_PATH)/aoi.so : 3rd/lua-aoi/Makefile | $(LUA_CLIB_PATH)
+	$(MAKE) -C 3rd/lua-aoi
+	cp -f 3rd/lua-aoi/aoi.so $@
+
+3rd/lua-aoi/Makefile : | 3rd/lua-aoi/init
+	cd 3rd/lua-cmsgpack; mkdir build; cd build; cmake ..
+
+3rd/lua-aoi/init :
 	git submodule update --init
 
 # cmsgpack

@@ -1,0 +1,9 @@
+# help
+
+character_list
+character_create character = {name = "$name", race = "human", class = "warrior",}
+character_pick id = $id
+
+map_ready
+move pos = {x = $x - 1, y = $y,}
+# combat target = $target
